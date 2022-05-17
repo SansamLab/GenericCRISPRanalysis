@@ -1,0 +1,164 @@
+---
+title: "Vignette 4: Plotting Summary Data"
+author: "Kevin Boyd"
+date: "`r Sys.Date()`"
+output: rmarkdown::github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+![Alt text](vignette4Data/DataViz.jpg)
+
+
+# Introduction
+This rmarkdown file is for finding a list of top hits from a CRISPR screen. I load the data, pull out beta scores, combine the FDR generated in a separate MLE, determine normalization method, plot the data, and filter the results for Q-value > -0.25. The result is a list of 10 genes possibly important to follow up. I also made ranked lists of the highest and lowest differences in beta score. 
+
+# Load Libraries
+```{r, message=FALSE} 
+library(MAGeCKFlute)
+library(plotly)
+library(RColorBrewer)
+library(htmlwidgets)
+library(cowplot)
+library(tidyverse)
+library(ggrepel)
+```
+
+
+# Load the data
+```{r}
+Replicates <- read.table("~/Dropbox (OMRF)/Github/CRISPRScreenAnalysis/Vignettes/vignette4Data/2022March23_All_CDC45_Day9.gene_summary.txt" , header = T)
+```
+
+
+# Look at the Data
+```{r}
+head(Replicates)
+```
+
+
+# Pull Out Only Beta Scores
+```{r}
+gdata <- ReadBeta(Replicates)
+head(gdata)
+```
+
+
+# Set Normalization
+```{r}
+ctrlname = "NoAuxin"
+treatname = "Auxin"
+gdata_cc = NormalizeBeta(gdata, samples=c(ctrlname, treatname), method="cell_cycle")
+head(gdata_cc)
+gdata_loe = NormalizeBeta(gdata, samples=c(ctrlname, treatname), method="loess")
+head(gdata_loe)
+```
+
+
+# Compare Normalized and Non-normalized Data
+**Do not normalize. Plots look terrible after cell_cycle normalization**
+```{r}
+#to compare density of the non-normalized betas
+p1 <- DensityView(gdata, samples=c(ctrlname, treatname))
+
+#to compare density of the normalized betas
+p2 <- DensityView(gdata_cc, samples=c(ctrlname, treatname))
+
+#to compare density of the normalized betas
+p3 <- DensityView(gdata_loe, samples=c(ctrlname, treatname))
+
+#plot them side by side
+plot_grid(p1, p2, p3, labels = c("NonNormalized","CellCycle","Loess"), nrow = 1)
+```
+
+
+# Find Positive and Negative Selection
+```{r}
+# choose which normalization
+gdata1 <- gdata
+gdata1$AuxinFDR <- Replicates$Auxin.fdr
+gdata1$NoAuxinFDR <- Replicates$NoAuxin.fdr
+
+#positive and negative selection
+gdata1$NoAuxin = rowMeans(gdata1[,ctrlname, drop = FALSE])
+gdata1$Auxin = rowMeans(gdata1[,treatname, drop = FALSE])
+
+#make difference column (Treatment - Control)
+gdata1$diff <- gdata1$Auxin - gdata1$NoAuxin
+```
+
+
+# Plot Treatment vs Control Beta Scores with Difference Auxin - NoAuxin (Diff)
+```{r}
+#ggplot with nice labels and color scheme
+ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=diff))+
+  geom_point() +
+  xlab("-Auxin") +
+  ylab("+Auxin") +
+  ggtitle("Control vs Treatment Beta Score with (Auxin - NoAuxin) Diff") +
+  scale_colour_gradient(low = "#ff7f00", high = "#7570b3")
+```
+
+
+# Plot Treatment vs Control Beta Scores with Q-values (FDR)
+```{r}
+#ggplot with nice labels and color scheme
+ggplot(data=Replicates,aes(x=NoAuxin.beta,y=Auxin.beta,label=Gene,color=Auxin.fdr))+
+  geom_point() +
+  xlab("-Auxin") +
+  ylab("+Auxin") +
+  ggtitle("Control vs Treatment Beta Score with Rep2_vs_Rep1 FDR") +
+  scale_colour_gradient(low = "#ff7f00", high = "#7570b3") #+
+#  scale_x_continuous(limits = c(-3, 2.5)) +
+#  scale_y_continuous(limits = c(-3, 2.5))
+```
+
+
+# Plot Treatment vs Control Beta Scores with Difference Auxin - NoAuxin (Diff)
+```{r}
+# ggplot with nice labels and color scheme
+ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=abs(diff))) +
+  geom_point() +
+  xlab("-Auxin") +
+  ylab("+Auxin") +
+  ggtitle("Control vs Treatment Beta Score with (Auxin - NoAuxin) Diff") +
+  scale_colour_gradient2(low = "#6a3d9a", mid = "#cab2d6", high = "#ff7f00") +
+  geom_text_repel(data=filter(gdata1, AuxinFDR<=0.1), aes(label=Gene))
+```
+
+# Export Plotly Graph
+```{r, eval=FALSE}
+# Export as a plotly graph
+# fig1 <- ggplotly(p2)
+# saveWidget(as_widget(fig1), "~/Desktop/ControlvsTreatmentBeta.html")
+```
+
+
+
+# Lists of Best Genes
+
+## Find all FDR < 0.1 With an Absolute Difference > 0.5
+```{r}
+gdata1 %>% filter(AuxinFDR <= 0.01 & diff > 0.5)
+gdata1 %>% filter(NoAuxinFDR <= 0.01 & diff > 0.5)
+```
+
+## Top10 Negative Difference (Enhancers)
+```{r}
+Bottom10 <- gdata1[order(gdata1$diff, decreasing = F),]
+Bottom10[1:10,]
+```
+
+## Top10 Positive Difference (Supressors)
+```{r}
+Top10 <- gdata1[order(gdata1$diff, decreasing = T),]
+Top10[1:10,]
+```

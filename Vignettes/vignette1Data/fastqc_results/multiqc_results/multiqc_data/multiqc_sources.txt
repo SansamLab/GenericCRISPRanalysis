@@ -1,0 +1,13 @@
+Module	Section	Sample Name	Source
+FastQC	all_sections	SRR10852447	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852447_fastqc.zip
+FastQC	all_sections	SRR10852436	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852436_fastqc.zip
+FastQC	all_sections	SRR10852443	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852443_fastqc.zip
+FastQC	all_sections	SRR10852435	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852435_fastqc.zip
+FastQC	all_sections	SRR10852442	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852442_fastqc.zip
+FastQC	all_sections	SRR10852441	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852441_fastqc.zip
+FastQC	all_sections	SRR10852434	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852434_fastqc.zip
+FastQC	all_sections	SRR10852439	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852439_fastqc.zip
+FastQC	all_sections	SRR10852438	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852438_fastqc.zip
+FastQC	all_sections	SRR10852437	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852437_fastqc.zip
+FastQC	all_sections	SRR10852440	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852440_fastqc.zip
+FastQC	all_sections	SRR10852450	/net/flotsam.nfs/ifs/omrf/sansam/hpc-nobackup/copy_test_RepTimingAnalysisPipeline/fastqc_results/SRR10852450_fastqc.zip

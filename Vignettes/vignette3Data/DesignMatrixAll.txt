@@ -1,0 +1,10 @@
+Samples	Baseline	NoAuxin	Auxin	May5	May19	Nov23_rep1	Nov23_rep2
+Sansam_Brunello_lentiCRISPRv2	1	0	0	0	0	0	0
+CDC45_Day9_May5	1	1	0	1	0	0	0
+CDC45_Day9_PlusAux_May5	1	0	1	1	0	0	0
+CDC45_Day9_May19	1	1	0	0	1	0	0
+CDC45_Day9_PlusAux_May19	1	0	1	0	1	0	0
+CDC45_Day9_PlusAux_Rep1	1	0	1	0	0	1	0
+CDC45_Day9_PlusAux_Rep2	1	0	1	0	0	0	1
+CDC45_Day9_Rep1	1	1	0	0	0	1	0
+CDC45_Day9_Rep2	1	1	0	0	0	0	1

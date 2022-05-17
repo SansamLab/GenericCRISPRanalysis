@@ -1,0 +1,5 @@
+File	Label	Reads	Mapped	Percentage	TotalsgRNAs	Zerocounts	GiniIndex	NegSelQC	NegSelQCPval	NegSelQCPvalPermutation	NegSelQCPvalPermutationFDR	NegSelQCGene
+/tmp/tmp.FahF7DEHsv/brunello_TNscreen_S32_R1_001.fastq	Sansam_Brunello_lentiguide	38947070	26961023	0.6922	77441	113	0.05822	0	1	1	1	0.0
+/tmp/tmp.FahF7DEHsv/SRR8983579.fastq	SRR8983579_Brunello_lentiguide	53988374	39374415	0.7293	77441	15	0.0532	0	1	1	1	0.0
+/tmp/tmp.FahF7DEHsv/SRR6737232.fastq	SRR6737232_Brunello_lentiguide	28800803	20954251	0.7276	77441	111	0.0616	0	1	1	1	0.0
+/tmp/tmp.FahF7DEHsv/SRR8297998.fastq	SRR8297998_Brunello_lentiguide	60120685	26839950	0.4464	77441	91	0.0573	0	1	1	1	0.0

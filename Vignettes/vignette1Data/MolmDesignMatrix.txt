@@ -1,0 +1,11 @@
+Samples	baseline	DMSO	Gilteritinib	Midostaurin
+Day0	1	0	0	0
+MOLM-13.DMSO_1	1	1	0	0
+MOLM-13.DMSO_2	1	1	0	0
+MOLM-13.DMSO_3	1	1	0	0
+MOLM-13.Midostaurin_3	1	0	0	1
+MOLM-13.Midostaurin_4	1	0	0	1
+MOLM-13.Midostaurin_5	1	0	0	1
+MOLM-13.Gilteritinib_1	1	0	1	0
+MOLM-13.Gilteritinib_2	1	0	1	0
+MOLM-13.Gilteritinib_3	1	0	1	0
