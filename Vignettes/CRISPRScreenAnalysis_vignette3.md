@@ -110,11 +110,11 @@ mageck mle \
 ### Inputs:
 
 1.  [CRISPRScreenAnalysisWrapperPairedEnd_ver01.sh](../Scripts/CRISPRScreenAnalysisWrapperPairedEnd_ver01.sh)  
-2.  [DesignMatrixAll.txt](vignette3Data/DesignMatrixAll.txt)
+2.  [MOLMDesignMatrix.txt](vignette1Data/MOLMDesignMatrix.txt)
 
 ### Outputs:
 
 1.  MAGeCK MLE  
 
--   [2022March23_All_CDC45_Day9.gene_summary.txt](vignette3Data/sample1.gene_summary.txt)
--   [2022March23_All_CDC45_Day9.sgrna_summary.txt](vignette3Data/sample1.sgrna_summary.txt)
+-   [Gene Summary File](vignette3Data/sample1.gene_summary.txt)
+-   [sgRNA Summary File](vignette3Data/sample1.sgrna_summary.txt)
