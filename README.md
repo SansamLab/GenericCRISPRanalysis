@@ -13,9 +13,11 @@ Kevin Boyd & Chris Sansam
 
 ## Example input files (see vignette 1):
 
-1.  [sgRNA library file](Data/broadgpp-brunello-library-corrected.txt)  
-2.  [Negative control sgRNA file](Data/brunello_nonTargeting.txt)  
-3.  [Design matrix](vignettes/MolmDesignMatrix.txt)
+1.  [sgRNA library
+    file](Vignettes/vignette1Data/broadgpp-brunello-library-corrected.txt)  
+2.  [Negative control sgRNA
+    file](Vignettes/vignette1Data/brunello_nonTargeting.txt)  
+3.  [Design matrix](Vignettes/vignette1Data/MolmDesignMatrix.txt)
 
 ## Vignettes
 
@@ -57,7 +59,7 @@ usage is describe below.
             all be enclosed in a set of single quotes. For example:
             -s 'SRR4880321 SRR4880322'
 
-[CRISPRScreenAnalysisWrapper_ver01.sh](Scripts/CRISPRScreenAnalysisWrapperPairedEnd_ver01.sh)
+[CRISPRScreenAnalysisWrapperPairedEnd_ver01.sh](Scripts/CRISPRScreenAnalysisWrapperPairedEnd_ver01.sh)
 
 #### Arguments
 
