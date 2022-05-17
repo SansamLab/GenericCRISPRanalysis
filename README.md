@@ -215,22 +215,3 @@ SRR10852450.fastq SRR10852436.fastq SRR10852439.fastq SRR10852442.fastq' \
 
 -   [multiQC
     Report](Vignettes/vignette1Data/fastqc_results/multiqc_results/multiqc_report.html)
-
-# Possible Outcomes from Hits
-
-## Supressors
-
-![Alt text](Images/Supressors.jpg)
-
-## Enhancers
-
-![Alt text](Images/Enhancers.jpg)
-
-# Follow up Hits
-
-## Individual Guide Assays
-
-We measure the IC50 of cells expressing one guide and see if the IC50
-shifts compared to a control. We also measure how quickly the cells 
-proliferate when in different concentrations of Auxin. This will 
-allow to to determine if hits are “real” or not.
