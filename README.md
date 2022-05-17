@@ -29,8 +29,6 @@ Kevin Boyd & Chris Sansam
     Matrix](Vignettes/CRISPRScreenAnalysis_vignette3.md)
 -   [Vignette 4: Plot Beta Scores from Gene
     Summary](Vignettes/CRISPRScreenAnalysis_vignette4.md)
--   [Vignette 5: Individual Guide
-    Assay](Vignettes/CRISPRScreenAnalysis_vignette5.md)
 
 ------------------------------------------------------------------------
 

@@ -31,7 +31,6 @@ knitr::opts_chunk$set(
 - [Vignette 2:  Get fastq files from object store and SRA and make Counts table](Vignettes/CRISPRScreenAnalysis_vignette2.md)
 - [Vignette 3:  Run MAGeCK MLE with Counts and Design Matrix](Vignettes/CRISPRScreenAnalysis_vignette3.md)
 - [Vignette 4:  Plot Beta Scores from Gene Summary](Vignettes/CRISPRScreenAnalysis_vignette4.md)
-- [Vignette 5:  Individual Guide Assay](Vignettes/CRISPRScreenAnalysis_vignette5.md)
 
 -------
 # Pipeline Bash Script
