@@ -230,7 +230,7 @@ SRR10852450.fastq SRR10852436.fastq SRR10852439.fastq SRR10852442.fastq' \
 
 ## Individual Guide Assays
 
-Measure the IC50 of cells expressing one guide and see if the IC50
-shifts. Also we can measure how much the cells grow when in different
-concentrations of Auxin. This will allow to to determine if hits are
-“real” or not.
+We measure the IC50 of cells expressing one guide and see if the IC50
+shifts compared to a control. We also measure how quickly the cells 
+proliferate when in different concentrations of Auxin. This will 
+allow to to determine if hits are “real” or not.
