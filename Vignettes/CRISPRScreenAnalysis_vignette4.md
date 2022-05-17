@@ -1,7 +1,7 @@
 Vignette 4: Plotting Summary Data
 ================
 Kevin Boyd
-2022-05-09
+2022-05-17
 
 ![Alt text](vignette4Data/DataViz.jpg)
 
@@ -10,9 +10,9 @@ Kevin Boyd
 This rmarkdown file is for finding a list of top hits from a CRISPR
 screen. I load the data, pull out beta scores, combine the FDR generated
 in a separate MLE, determine normalization method, plot the data, and
-filter the results for Q-value \> -0.25. The result is a list of 10
-genes possibly important to follow up. I also made ranked lists of the
-highest and lowest differences in beta score.
+filter the results for Q-value \< 0.01. The result is a list of genes
+possibly important to follow up. I also made ranked lists of the highest
+and lowest differences in beta score.
 
 # Load Libraries
 
@@ -29,69 +29,48 @@ library(ggrepel)
 # Load the data
 
 ``` r
-Replicates <- read.table("~/Dropbox (OMRF)/Github/CRISPRScreenAnalysis/Vignettes/vignette4Data/2022March23_All_CDC45_Day9.gene_summary.txt" , header = T)
+Replicates <- read.table("~/Dropbox (OMRF)/Github/GenericCRISPRAnalysis/GenericCRISPRanalysis/Vignettes/vignette4Data/sample1.gene_summary.txt" , header = T)
 ```
 
 # Look at the Data
 
 ``` r
 head(Replicates)
-#>      Gene sgRNA NoAuxin.beta NoAuxin.z NoAuxin.p.value NoAuxin.fdr
-#> 1 CABLES2     4    0.0934630  0.808330         0.25114     0.78989
-#> 2  OR52E6     4   -0.0092210 -0.055357         0.69790     0.95484
-#> 3   ZC3H8     4   -0.4070400 -1.815500         0.15597     0.72372
-#> 4   CLDN4     4    0.0135090  0.171370         0.58751     0.92051
-#> 5    PPAN     4   -0.4603700 -2.317100         0.10925     0.66847
-#> 6 ZDHHC12     4    0.0080667  0.059862         0.61335     0.92870
-#>   NoAuxin.wald.p.value NoAuxin.wald.fdr Auxin.beta  Auxin.z Auxin.p.value
-#> 1             0.418900          0.91460   0.198730  1.71820       0.30560
-#> 2             0.955850          0.99788   0.126040  0.75675       0.53806
-#> 3             0.069451          0.42464  -0.129660 -0.57843       0.53806
-#> 4             0.863930          0.99446   0.057311  0.72695       0.80270
-#> 5             0.020498          0.20631  -0.145940 -0.73591       0.49527
-#> 6             0.952270          0.99705   0.186170  1.38150       0.34040
-#>   Auxin.fdr Auxin.wald.p.value Auxin.wald.fdr May5.beta   May5.z May5.p.value
-#> 1   0.87316           0.085752        0.54207 -0.013050 -0.12110     0.994920
-#> 2   0.93914           0.449200        0.75623  0.281660  1.82100     0.099618
-#> 3   0.93914           0.562970        0.81417 -0.129970 -0.62170     0.488670
-#> 4   0.97523           0.467260        0.76569  0.019872  0.27137     0.847070
-#> 5   0.92467           0.461780        0.76291 -0.049632 -0.26662     0.825350
-#> 6   0.87980           0.167140        0.60122 -0.090114 -0.71774     0.646990
-#>   May5.fdr May5.wald.p.value May5.wald.fdr May19.beta  May19.z May19.p.value
-#> 1  0.99921           0.90361       0.98876   0.156170  1.45250      0.189240
-#> 2  0.85816           0.06861       0.71615  -0.184540 -1.19290      0.379170
-#> 3  0.96923           0.53414       0.90554  -0.041172 -0.19746      0.987130
-#> 4  0.99197           0.78610       0.96912  -0.024687 -0.33721      0.929050
-#> 5  0.98903           0.78976       0.97012  -0.406790 -2.18430      0.042275
-#> 6  0.98179           0.47291       0.88432   0.135450  1.08100      0.239050
-#>   May19.fdr May19.wald.p.value May19.wald.fdr Nov23_rep1.beta Nov23_rep1.z
-#> 1   0.87784           0.146360        0.82991        0.074554      0.69155
-#> 2   0.93667           0.232890        0.88194        0.130900      0.84605
-#> 3   0.99879           0.843470        0.99151       -0.172560     -0.82416
-#> 4   0.99765           0.735960        0.98401       -0.039685     -0.54183
-#> 5   0.68846           0.028943        0.65080        0.057574      0.30915
-#> 6   0.89667           0.279710        0.89871        0.150070      1.19560
-#>   Nov23_rep1.p.value Nov23_rep1.fdr Nov23_rep1.wald.p.value Nov23_rep1.wald.fdr
-#> 1            0.44305        0.94292                 0.48922             0.99944
-#> 2            0.24172        0.87922                 0.39753             0.99944
-#> 3            0.34762        0.92267                 0.40985             0.99944
-#> 4            0.95956        0.99691                 0.58794             0.99944
-#> 5            0.51567        0.95007                 0.75721             0.99944
-#> 6            0.19045        0.84012                 0.23184             0.99944
-#>   Nov23_rep2.beta Nov23_rep2.z Nov23_rep2.p.value Nov23_rep2.fdr
-#> 1       0.0745190     0.691360            0.53011        0.95531
-#> 2      -0.1112100    -0.718640            0.59326        0.96547
-#> 3      -0.1930000    -0.920690            0.30634        0.92148
-#> 4       0.1153200     1.575000            0.38210        0.94257
-#> 5      -0.2074600    -1.105800            0.26971        0.92148
-#> 6      -0.0011592    -0.009228            0.87773        0.99132
-#>   Nov23_rep2.wald.p.value Nov23_rep2.wald.fdr
-#> 1                 0.48934             0.91760
-#> 2                 0.47236             0.91609
-#> 3                 0.35721             0.89533
-#> 4                 0.11526             0.84083
-#> 5                 0.26879             0.87357
-#> 6                 0.99264             0.99871
+#>       Gene sgRNA DMSO.beta  DMSO.z DMSO.p.value DMSO.fdr DMSO.wald.p.value
+#> 1    DNAH8     4   0.35163 0.65142      0.47606  0.73320           0.51477
+#> 2    GATA6     4   0.52365 0.74169      0.59300  0.80911           0.45827
+#> 3     CETP     4   0.43637 0.67813      0.92644  0.97340           0.49769
+#> 4 C17orf64     4   0.42558 0.78949      0.86470  0.94571           0.42983
+#> 5      DR1     4   0.41899 0.46538      0.82520  0.92859           0.64166
+#> 6  NFKBIL1     4   0.22698 0.74394      0.10197  0.32592           0.45691
+#>   DMSO.wald.fdr Gilteritinib.beta Gilteritinib.z Gilteritinib.p.value
+#> 1       0.82585           0.35066        0.65025              0.58395
+#> 2       0.82585           0.54351        0.76994              0.41584
+#> 3       0.82585           0.47235        0.73498              0.74740
+#> 4       0.82585           0.48603        0.90186              0.67797
+#> 5       0.82736           0.59370        0.66004              0.25266
+#> 6       0.82585           0.16879        0.55347              0.05750
+#>   Gilteritinib.fdr Gilteritinib.wald.p.value Gilteritinib.wald.fdr
+#> 1          0.81730                   0.51553               0.85002
+#> 2          0.70072                   0.44133               0.85002
+#> 3          0.90020                   0.46235               0.85002
+#> 4          0.86630                   0.36713               0.85002
+#> 5          0.54473                   0.50923               0.85002
+#> 6          0.23943                   0.57994               0.85002
+#>   Midostaurin.beta Midostaurin.z Midostaurin.p.value Midostaurin.fdr
+#> 1         0.498120      0.927500          0.01407400        0.163920
+#> 2         0.014104      0.019981          0.86208000        0.953090
+#> 3         0.694190      1.082500          0.00062784        0.042105
+#> 4         0.189640      0.351970          0.41056000        0.719970
+#> 5        -0.805980     -0.894610          0.00026160        0.033113
+#> 6         0.357640      1.173700          0.08172400        0.359080
+#>   Midostaurin.wald.p.value Midostaurin.wald.fdr
+#> 1                  0.35367                    1
+#> 2                  0.98406                    1
+#> 3                  0.27904                    1
+#> 4                  0.72486                    1
+#> 5                  0.37100                    1
+#> 6                  0.24051                    1
 ```
 
 # Pull Out Only Beta Scores
@@ -99,38 +78,38 @@ head(Replicates)
 ``` r
 gdata <- ReadBeta(Replicates)
 head(gdata)
-#>      Gene    NoAuxin     Auxin      May5     May19 Nov23_rep1 Nov23_rep2
-#> 1 CABLES2  0.0934630  0.198730 -0.013050  0.156170   0.074554  0.0745190
-#> 2  OR52E6 -0.0092210  0.126040  0.281660 -0.184540   0.130900 -0.1112100
-#> 3   ZC3H8 -0.4070400 -0.129660 -0.129970 -0.041172  -0.172560 -0.1930000
-#> 4   CLDN4  0.0135090  0.057311  0.019872 -0.024687  -0.039685  0.1153200
-#> 5    PPAN -0.4603700 -0.145940 -0.049632 -0.406790   0.057574 -0.2074600
-#> 6 ZDHHC12  0.0080667  0.186170 -0.090114  0.135450   0.150070 -0.0011592
+#>       Gene    DMSO Gilteritinib Midostaurin
+#> 1    DNAH8 0.35163      0.35066    0.498120
+#> 2    GATA6 0.52365      0.54351    0.014104
+#> 3     CETP 0.43637      0.47235    0.694190
+#> 4 C17orf64 0.42558      0.48603    0.189640
+#> 5      DR1 0.41899      0.59370   -0.805980
+#> 6  NFKBIL1 0.22698      0.16879    0.357640
 ```
 
 # Set Normalization
 
 ``` r
-ctrlname = "NoAuxin"
-treatname = "Auxin"
+ctrlname = "DMSO"
+treatname = "Gilteritinib"
 gdata_cc = NormalizeBeta(gdata, samples=c(ctrlname, treatname), method="cell_cycle")
 head(gdata_cc)
-#>      Gene     NoAuxin      Auxin      May5     May19 Nov23_rep1 Nov23_rep2
-#> 1 CABLES2  0.14954559  0.4551868 -0.013050  0.156170   0.074554  0.0745190
-#> 2  OR52E6 -0.01475407  0.2886919  0.281660 -0.184540   0.130900 -0.1112100
-#> 3   ZC3H8 -0.65128484 -0.2969834 -0.129970 -0.041172  -0.172560 -0.1930000
-#> 4   CLDN4  0.02161509  0.1312696  0.019872 -0.024687  -0.039685  0.1153200
-#> 5    PPAN -0.73661557 -0.3342724 -0.049632 -0.406790   0.057574 -0.2074600
-#> 6 ZDHHC12  0.01290713  0.4264184 -0.090114  0.135450   0.150070 -0.0011592
+#>       Gene     DMSO Gilteritinib Midostaurin
+#> 1    DNAH8 2.811578     3.402550    0.498120
+#> 2    GATA6 4.187023     5.273826    0.014104
+#> 3     CETP 3.489146     4.583341    0.694190
+#> 4 C17orf64 3.402871     4.716082    0.189640
+#> 5      DR1 3.350178     5.760834   -0.805980
+#> 6  NFKBIL1 1.814896     1.637816    0.357640
 gdata_loe = NormalizeBeta(gdata, samples=c(ctrlname, treatname), method="loess")
 head(gdata_loe)
-#>      Gene     NoAuxin       Auxin      May5     May19 Nov23_rep1 Nov23_rep2
-#> 1 CABLES2  0.15391530  0.13827770 -0.013050  0.156170   0.074554  0.0745190
-#> 2  OR52E6  0.03421942  0.08259958  0.281660 -0.184540   0.130900 -0.1112100
-#> 3   ZC3H8 -0.37761691 -0.15908309 -0.129970 -0.041172  -0.172560 -0.1930000
-#> 4   CLDN4  0.05371550  0.01710450  0.019872 -0.024687  -0.039685  0.1153200
-#> 5    PPAN -0.42934316 -0.17696684 -0.049632 -0.406790   0.057574 -0.2074600
-#> 6 ZDHHC12  0.05822449  0.13601221 -0.090114  0.135450   0.150070 -0.0011592
+#>       Gene      DMSO Gilteritinib Midostaurin
+#> 1    DNAH8 0.3452823    0.3570077    0.498120
+#> 2    GATA6 0.5188582    0.5483018    0.014104
+#> 3     CETP 0.4308822    0.4778378    0.694190
+#> 4 C17orf64 0.4201072    0.4915028    0.189640
+#> 5      DR1 0.4139583    0.5987317   -0.805980
+#> 6  NFKBIL1 0.2204320    0.1753380    0.357640
 ```
 
 # Compare Normalized and Non-normalized Data
@@ -158,26 +137,26 @@ plot_grid(p1, p2, p3, labels = c("NonNormalized","CellCycle","Loess"), nrow = 1)
 ``` r
 # choose which normalization
 gdata1 <- gdata
-gdata1$AuxinFDR <- Replicates$Auxin.fdr
-gdata1$NoAuxinFDR <- Replicates$NoAuxin.fdr
+gdata1$GilteritinibFDR <- Replicates$Gilteritinib.fdr
+gdata1$MidostaurinFDR <- Replicates$Midostaurin.fdr
 
 #positive and negative selection
-gdata1$NoAuxin = rowMeans(gdata1[,ctrlname, drop = FALSE])
-gdata1$Auxin = rowMeans(gdata1[,treatname, drop = FALSE])
+gdata1$DMSO = rowMeans(gdata1[,ctrlname, drop = FALSE])
+gdata1$Gilteritinib = rowMeans(gdata1[,treatname, drop = FALSE])
 
 #make difference column (Treatment - Control)
-gdata1$diff <- gdata1$Auxin - gdata1$NoAuxin
+gdata1$diff <- gdata1$Gilteritinib - gdata1$DMSO
 ```
 
 # Plot Treatment vs Control Beta Scores with Difference Auxin - NoAuxin (Diff)
 
 ``` r
 #ggplot with nice labels and color scheme
-ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=diff))+
+ggplot(data=gdata1,aes(x=DMSO,y=Gilteritinib,label=Gene,color=diff))+
   geom_point() +
-  xlab("-Auxin") +
-  ylab("+Auxin") +
-  ggtitle("Control vs Treatment Beta Score with (Auxin - NoAuxin) Diff") +
+  xlab("DMSO") +
+  ylab("Gilteritinib") +
+  ggtitle("Control vs Treatment Beta Score with (Treatment - Control) Diff") +
   scale_colour_gradient(low = "#ff7f00", high = "#7570b3")
 ```
 
@@ -187,11 +166,11 @@ ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=diff))+
 
 ``` r
 #ggplot with nice labels and color scheme
-ggplot(data=Replicates,aes(x=NoAuxin.beta,y=Auxin.beta,label=Gene,color=Auxin.fdr))+
+ggplot(data=Replicates,aes(x=DMSO.beta,y=Gilteritinib.beta,label=Gene,color=Gilteritinib.fdr))+
   geom_point() +
-  xlab("-Auxin") +
-  ylab("+Auxin") +
-  ggtitle("Control vs Treatment Beta Score with Rep2_vs_Rep1 FDR") +
+  xlab("DMSO") +
+  ylab("Gilteritinib") +
+  ggtitle("Control vs Treatment Beta Score with Gilteritinib FDR") +
   scale_colour_gradient(low = "#ff7f00", high = "#7570b3") #+
 ```
 
@@ -206,13 +185,15 @@ ggplot(data=Replicates,aes(x=NoAuxin.beta,y=Auxin.beta,label=Gene,color=Auxin.fd
 
 ``` r
 # ggplot with nice labels and color scheme
-ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=abs(diff))) +
+ggplot(data=gdata1,aes(x=DMSO,y=Gilteritinib,label=Gene,color=abs(diff))) +
   geom_point() +
   xlab("-Auxin") +
   ylab("+Auxin") +
   ggtitle("Control vs Treatment Beta Score with (Auxin - NoAuxin) Diff") +
   scale_colour_gradient2(low = "#6a3d9a", mid = "#cab2d6", high = "#ff7f00") +
-  geom_text_repel(data=filter(gdata1, AuxinFDR<=0.1), aes(label=Gene))
+  geom_text_repel(data=filter(gdata1, GilteritinibFDR<=0.01), aes(label=Gene))
+#> Warning: ggrepel: 1065 unlabeled data points (too many overlaps). Consider
+#> increasing max.overlaps
 ```
 
 ![](CRISPRScreenAnalysis_vignette4_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
@@ -230,46 +211,27 @@ ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=abs(diff))) +
 ## Find all FDR \< 0.1 With an Absolute Difference \> 0.5
 
 ``` r
-gdata1 %>% filter(AuxinFDR <= 0.01 & diff > 0.5)
-#>       Gene    NoAuxin   Auxin    May5     May19 Nov23_rep1 Nov23_rep2 AuxinFDR
-#> 1    ITPK1 -0.1235400 1.19430 0.41951  0.067568  0.2711400   0.312500        0
-#> 2    KPNA2  0.0499630 0.82251 0.24469 -0.042992  0.4251000   0.245680        0
-#> 3     LEO1 -0.0109690 0.82857 0.34183  0.133630  0.2985200   0.043627        0
-#> 4    PRDM4  0.0087002 1.31510 0.53333  0.158990  0.1766300   0.454840        0
-#> 5     CCNC -0.2686800 0.81444 0.20035  0.171120  0.0371660   0.137130        0
-#> 6   MAP2K3 -0.1942500 0.84981 0.11106  0.102370  0.1798900   0.262240        0
-#> 7  L3MBTL2  0.3615800 0.96798 0.46126  0.247340  0.4214200   0.199530        0
-#> 8     SKP1 -0.6442300 1.35560 0.28049 -0.049982  0.0075599   0.473260        0
-#> 9    TCEB3 -0.1901100 0.87395 0.18718 -0.111960  0.2329100   0.375700        0
-#> 10   RBM15 -0.0386320 1.74970 0.44675  0.243610  0.5797300   0.441010        0
-#> 11     MGA  0.2285800 1.46310 0.41287  0.428130  0.5284700   0.322220        0
-#> 12  LARP4B -0.0319860 0.83586 0.17572 -0.157760  0.4874300   0.298480        0
-#>    NoAuxinFDR     diff
-#> 1     0.97261 1.317840
-#> 2     0.87610 0.772547
-#> 3     0.95666 0.839539
-#> 4     0.92691 1.306400
-#> 5     0.85175 1.083120
-#> 6     0.91381 1.044060
-#> 7     0.11111 0.606400
-#> 8     0.45529 1.999830
-#> 9     0.91611 1.064060
-#> 10    0.97688 1.788332
-#> 11    0.40213 1.234520
-#> 12    0.97370 0.867846
-gdata1 %>% filter(NoAuxinFDR <= 0.01 & diff > 0.5)
-#>           Gene NoAuxin    Auxin     May5    May19 Nov23_rep1 Nov23_rep2
-#> 1        WASH1 -1.6159 -1.09910 -0.90181 -0.54130   -0.78231  -0.489590
-#> 2       ZNHIT2 -1.5210 -0.58746 -0.50254 -0.46394   -1.06860  -0.073345
-#> 3        PSMA6 -1.8621 -1.31380 -0.67440 -0.32419   -1.08610  -1.091100
-#> 4         XPO1 -1.8361 -0.77318 -0.42391 -0.81138   -1.09690  -0.277070
-#> 5 LOC102724862 -1.3162 -0.70781 -0.19025 -0.37607   -0.62415  -0.833580
-#>   AuxinFDR NoAuxinFDR    diff
-#> 1 0.227270          0 0.51680
-#> 2 0.615630          0 0.93354
-#> 3 0.052632          0 0.54830
-#> 4 0.505020          0 1.06292
-#> 5 0.545070          0 0.60839
+gdata1 %>% filter(GilteritinibFDR <= 0.01 & diff > 0.5)
+#>     Gene     DMSO Gilteritinib Midostaurin GilteritinibFDR MidostaurinFDR
+#> 1 CPSF3L -0.59594    -0.086011    0.435120       0.0062370       0.226580
+#> 2  RPS15 -1.28590    -0.638130    0.031743       0.0000000       0.983870
+#> 3 SNRPA1 -1.07190    -0.456390   -0.627880       0.0000000       0.055769
+#> 4  RPL13 -0.73251    -0.082526    0.367920       0.0062370       0.341160
+#> 5  RPL27 -1.75040    -0.459910   -0.511220       0.0000000       0.114200
+#> 6  RPS24 -1.24620    -0.496940   -0.476360       0.0000000       0.145120
+#> 7  DDX47 -0.77241    -0.208910    0.566190       0.0017422       0.106160
+#> 8  CNOT3 -0.94902    -0.350480    0.497040       0.0000000       0.164560
+#> 9 RUVBL1 -1.39040    -0.454980   -0.201140       0.0000000       0.507710
+#>       diff
+#> 1 0.509929
+#> 2 0.647770
+#> 3 0.615510
+#> 4 0.649984
+#> 5 1.290490
+#> 6 0.749260
+#> 7 0.563500
+#> 8 0.598540
+#> 9 0.935420
 ```
 
 ## Top10 Negative Difference (Enhancers)
@@ -277,28 +239,28 @@ gdata1 %>% filter(NoAuxinFDR <= 0.01 & diff > 0.5)
 ``` r
 Bottom10 <- gdata1[order(gdata1$diff, decreasing = F),]
 Bottom10[1:10,]
-#>           Gene   NoAuxin    Auxin      May5     May19 Nov23_rep1 Nov23_rep2
-#> 18826    MORC2  0.217490 -0.50613  0.149170 -0.194810 -0.2290800 -0.0139150
-#> 18910    UNC5C -0.053917 -0.72982 -0.501990 -0.290860  0.0046902  0.0044301
-#> 353    FAM208A -0.645560 -1.30000 -0.502960 -0.505540 -0.2648700 -0.6722000
-#> 14124 HIST2H3A -0.715080 -1.35270 -0.465220 -0.443910 -0.6935000 -0.4651400
-#> 14604     ASB7  0.220040 -0.32321  0.094767 -0.086217 -0.0063414 -0.1053800
-#> 16604     SETX -0.230260 -0.77141 -0.222310 -0.584370 -0.1523900 -0.0425980
-#> 18331    NUDT1  0.296670 -0.22419  0.105310 -0.011031 -0.0974660  0.0756680
-#> 17918   ZNF664 -0.356050 -0.87390 -0.616040 -0.146320 -0.2700900 -0.1975000
-#> 14897   SETDB1 -0.157760 -0.66792 -0.121390 -0.224450 -0.2656600 -0.2141700
-#> 7908      TAF4  0.019402 -0.49013 -0.040686 -0.266820 -0.1134900 -0.0497300
-#>       AuxinFDR NoAuxinFDR      diff
-#> 18826 0.700140    0.43670 -0.723620
-#> 18910 0.523440    0.98660 -0.675903
-#> 353   0.052632    0.45529 -0.654440
-#> 14124 0.052632    0.40926 -0.637620
-#> 14604 0.807320    0.42396 -0.543250
-#> 16604 0.505020    0.88988 -0.541150
-#> 18331 0.878280    0.22699 -0.520860
-#> 17918 0.386900    0.75988 -0.517850
-#> 14897 0.565810    0.94794 -0.510160
-#> 7908  0.721870    0.91540 -0.509532
+#>           Gene      DMSO Gilteritinib Midostaurin GilteritinibFDR
+#> 18952   RNF19A  0.649530    -0.070932    1.053700       0.0083721
+#> 5668    SNRPD3 -0.326900    -0.941940   -0.624620       0.0000000
+#> 18327   RPL10A  0.089167    -0.433030    0.100120       0.0000000
+#> 14400    RPS17 -0.133510    -0.638210   -0.053736       0.0000000
+#> 16473      CAD -0.753640    -1.256200   -0.145120       0.0000000
+#> 14667   PLA2G5  0.614330     0.120880    0.528170       0.1352600
+#> 17346    WDHD1 -0.166490    -0.656680    0.432300       0.0000000
+#> 18567     GPS1 -0.233900    -0.722360    0.806560       0.0000000
+#> 13903     DIS3 -0.204520    -0.685890   -0.242740       0.0000000
+#> 14660 HIST2H3C -0.042147    -0.517800    0.061622       0.0000000
+#>       MidostaurinFDR      diff
+#> 18952       0.000000 -0.720462
+#> 5668        0.055769 -0.615040
+#> 18327       0.903260 -0.522197
+#> 14400       0.825470 -0.504700
+#> 16473       0.630660 -0.502560
+#> 14667       0.145120 -0.493450
+#> 17346       0.231510 -0.490190
+#> 18567       0.015267 -0.488460
+#> 13903       0.422400 -0.481370
+#> 14660       0.973620 -0.475653
 ```
 
 ## Top10 Positive Difference (Supressors)
@@ -306,26 +268,26 @@ Bottom10[1:10,]
 ``` r
 Top10 <- gdata1[order(gdata1$diff, decreasing = T),]
 Top10[1:10,]
-#>        Gene    NoAuxin     Auxin     May5     May19 Nov23_rep1 Nov23_rep2
-#> 11706  SKP1 -0.6442300  1.355600  0.28049 -0.049982  0.0075599    0.47326
-#> 16519 RBM15 -0.0386320  1.749700  0.44675  0.243610  0.5797300    0.44101
-#> 1779  ITPK1 -0.1235400  1.194300  0.41951  0.067568  0.2711400    0.31250
-#> 8959  PRDM4  0.0087002  1.315100  0.53333  0.158990  0.1766300    0.45484
-#> 17079   MGA  0.2285800  1.463100  0.41287  0.428130  0.5284700    0.32222
-#> 14282 ZMYM4 -0.4397700  0.738610 -0.19366 -0.226340  0.0788510    0.63999
-#> 9456   CCNC -0.2686800  0.814440  0.20035  0.171120  0.0371660    0.13713
-#> 17172 TICRR -1.0900000 -0.016506 -0.34371 -0.688770 -0.7714800    0.69746
-#> 11972 TCEB3 -0.1901100  0.873950  0.18718 -0.111960  0.2329100    0.37570
-#> 16538  XPO1 -1.8361000 -0.773180 -0.42391 -0.811380 -1.0969000   -0.27707
-#>       AuxinFDR NoAuxinFDR     diff
-#> 11706  0.00000    0.45529 1.999830
-#> 16519  0.00000    0.97688 1.788332
-#> 1779   0.00000    0.97261 1.317840
-#> 8959   0.00000    0.92691 1.306400
-#> 17079  0.00000    0.40213 1.234520
-#> 14282  0.14286    0.69864 1.178380
-#> 9456   0.00000    0.85175 1.083120
-#> 17172  0.99378    0.11111 1.073494
-#> 11972  0.00000    0.91611 1.064060
-#> 16538  0.50502    0.00000 1.062920
+#>          Gene     DMSO Gilteritinib Midostaurin GilteritinibFDR MidostaurinFDR
+#> 19031  ZNHIT2 -1.55600     0.099156    0.675540        0.104120       0.049738
+#> 18683   RPL27 -1.75040    -0.459910   -0.511220        0.000000       0.114200
+#> 18002   RPS13 -0.17031     0.817620    0.378480        0.077414       0.326530
+#> 18343   PDCD2 -0.87704     0.059634    0.234660        0.064811       0.616490
+#> 19106  RUVBL1 -1.39040    -0.454980   -0.201140        0.000000       0.507710
+#> 18904   RPS24 -1.24620    -0.496940   -0.476360        0.000000       0.145120
+#> 17269 TBC1D3C -0.53672     0.145250   -0.448110        0.184110       0.159380
+#> 17692   RPL13 -0.73251    -0.082526    0.367920        0.006237       0.341160
+#> 12997   RPS15 -1.28590    -0.638130    0.031743        0.000000       0.983870
+#> 2566    CLRN1 -0.16623     0.480530    0.146410        0.879290       0.815790
+#>           diff
+#> 19031 1.655156
+#> 18683 1.290490
+#> 18002 0.987930
+#> 18343 0.936674
+#> 19106 0.935420
+#> 18904 0.749260
+#> 17269 0.681970
+#> 17692 0.649984
+#> 12997 0.647770
+#> 2566  0.646760
 ```

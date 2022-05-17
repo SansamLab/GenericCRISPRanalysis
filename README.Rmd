@@ -20,6 +20,19 @@ knitr::opts_chunk$set(
 
 ![Alt text](Images/flowChart.svg)
 
+## Example input files (see vignette 1):
+1. [sgRNA library file](Data/broadgpp-brunello-library-corrected.txt)  
+2. [Negative control sgRNA file](Data/brunello_nonTargeting.txt)  
+3. [Design matrix](vignettes/MolmDesignMatrix.txt)
+
+## Vignettes
+
+- [Vignette 1:  Download fastq files from SRA and run MAGeCK Counts and MLE](Vignettes/CRISPRScreenAnalysis_vignette1.md)
+- [Vignette 2:  Get fastq files from object store and SRA and make Counts table](Vignettes/CRISPRScreenAnalysis_vignette2.md)
+- [Vignette 3:  Run MAGeCK MLE with Counts and Design Matrix](Vignettes/CRISPRScreenAnalysis_vignette3.md)
+- [Vignette 4:  Plot Beta Scores from Gene Summary](Vignettes/CRISPRScreenAnalysis_vignette4.md)
+- [Vignette 5:  Individual Guide Assay](Vignettes/CRISPRScreenAnalysis_vignette5.md)
+
 -------
 # Pipeline Bash Script
 
@@ -60,22 +73,7 @@ or the object store to a specified directory. The usage is describe below.
 | -d              | design\_matrix\_file           | Name of the required design matrix file. See the MAGeCK documentation for details. This file must be stored in the working directory.                                                                                                                                                                                                                           |
 | -n              | negative\_control\_sgRNA\_file | Name of the required negative control file. See the MAGeCK documentation for details. This file must be stored in the working directory.                                                                                                                                                                                                                        |
 
-## Example input files (see vignette 1):
-1. [sgRNA library file](Data/broadgpp-brunello-library-corrected.txt)  
-2. [Negative control sgRNA file](Data/brunello_nonTargeting.txt)  
-3. [Design matrix](Data/2022Mar31_AllScreens/MLE/DesignMatrixAll.txt)
-
-## Vignettes
-
-- [Vignette 1:  Download fastq files from SRA and run MAGeCK Counts and MLE](Vignettes/CRISPRScreenAnalysis_vignette1.md)
-- [Vignette 2:  Get fastq files from object store and SRA and make Counts table](Vignettes/CRISPRScreenAnalysis_vignette2.md)
-- [Vignette 3:  Run MAGeCK MLE with Counts and Design Matrix](Vignettes/CRISPRScreenAnalysis_vignette3.md)
-- [Vignette 4:  Plot Beta Scores from Gene Summary](Vignettes/CRISPRScreenAnalysis_vignette4.md)
-- [Vignette 5:  Individual Guide Assay](Vignettes/CRISPRScreenAnalysis_vignette5.md)
-
 # Possible Outcomes from Hits
-
-![Alt text](Images/Flow.jpg)
 
 ## Supressors
 
@@ -93,9 +91,3 @@ Measure the IC50 of cells expressing one guide and see if the IC50 shifts. Also 
 grow when in different concentrations of Auxin. This will allow to to determine if hits are "real" or not. 
 
 
-### IC50 Measurements
-- [Prism File with IC50](Data/2021Oct6_Individual_Guides/2021Oct6_Auxin_IC50.pzfx)
-
-### Proliferation Assay
-- [Excel File (Background Subtract)](Data/2021Oct6_Individual_Guides/Pre-Processing/2021Nov15_ProliferationAssay_BackgroundSub.xlsx)
-- [Excel File (Remove Outliers)](Data/2021Oct6_Individual_Guides/Pre-Processing/Proliferation(OutliersRemoved).xlsx)

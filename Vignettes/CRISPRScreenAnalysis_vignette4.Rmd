@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 
 # Introduction
-This rmarkdown file is for finding a list of top hits from a CRISPR screen. I load the data, pull out beta scores, combine the FDR generated in a separate MLE, determine normalization method, plot the data, and filter the results for Q-value > -0.25. The result is a list of 10 genes possibly important to follow up. I also made ranked lists of the highest and lowest differences in beta score. 
+This rmarkdown file is for finding a list of top hits from a CRISPR screen. I load the data, pull out beta scores, combine the FDR generated in a separate MLE, determine normalization method, plot the data, and filter the results for Q-value < 0.01. The result is a list of genes possibly important to follow up. I also made ranked lists of the highest and lowest differences in beta score. 
 
 # Load Libraries
 ```{r, message=FALSE} 
@@ -35,7 +35,7 @@ library(ggrepel)
 
 # Load the data
 ```{r}
-Replicates <- read.table("~/Dropbox (OMRF)/Github/CRISPRScreenAnalysis/Vignettes/vignette4Data/2022March23_All_CDC45_Day9.gene_summary.txt" , header = T)
+Replicates <- read.table("~/Dropbox (OMRF)/Github/GenericCRISPRAnalysis/GenericCRISPRanalysis/Vignettes/vignette4Data/sample1.gene_summary.txt" , header = T)
 ```
 
 
@@ -54,8 +54,8 @@ head(gdata)
 
 # Set Normalization
 ```{r}
-ctrlname = "NoAuxin"
-treatname = "Auxin"
+ctrlname = "DMSO"
+treatname = "Gilteritinib"
 gdata_cc = NormalizeBeta(gdata, samples=c(ctrlname, treatname), method="cell_cycle")
 head(gdata_cc)
 gdata_loe = NormalizeBeta(gdata, samples=c(ctrlname, treatname), method="loess")
@@ -84,26 +84,26 @@ plot_grid(p1, p2, p3, labels = c("NonNormalized","CellCycle","Loess"), nrow = 1)
 ```{r}
 # choose which normalization
 gdata1 <- gdata
-gdata1$AuxinFDR <- Replicates$Auxin.fdr
-gdata1$NoAuxinFDR <- Replicates$NoAuxin.fdr
+gdata1$GilteritinibFDR <- Replicates$Gilteritinib.fdr
+gdata1$MidostaurinFDR <- Replicates$Midostaurin.fdr
 
 #positive and negative selection
-gdata1$NoAuxin = rowMeans(gdata1[,ctrlname, drop = FALSE])
-gdata1$Auxin = rowMeans(gdata1[,treatname, drop = FALSE])
+gdata1$DMSO = rowMeans(gdata1[,ctrlname, drop = FALSE])
+gdata1$Gilteritinib = rowMeans(gdata1[,treatname, drop = FALSE])
 
 #make difference column (Treatment - Control)
-gdata1$diff <- gdata1$Auxin - gdata1$NoAuxin
+gdata1$diff <- gdata1$Gilteritinib - gdata1$DMSO
 ```
 
 
 # Plot Treatment vs Control Beta Scores with Difference Auxin - NoAuxin (Diff)
 ```{r}
 #ggplot with nice labels and color scheme
-ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=diff))+
+ggplot(data=gdata1,aes(x=DMSO,y=Gilteritinib,label=Gene,color=diff))+
   geom_point() +
-  xlab("-Auxin") +
-  ylab("+Auxin") +
-  ggtitle("Control vs Treatment Beta Score with (Auxin - NoAuxin) Diff") +
+  xlab("DMSO") +
+  ylab("Gilteritinib") +
+  ggtitle("Control vs Treatment Beta Score with (Treatment - Control) Diff") +
   scale_colour_gradient(low = "#ff7f00", high = "#7570b3")
 ```
 
@@ -111,11 +111,11 @@ ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=diff))+
 # Plot Treatment vs Control Beta Scores with Q-values (FDR)
 ```{r}
 #ggplot with nice labels and color scheme
-ggplot(data=Replicates,aes(x=NoAuxin.beta,y=Auxin.beta,label=Gene,color=Auxin.fdr))+
+ggplot(data=Replicates,aes(x=DMSO.beta,y=Gilteritinib.beta,label=Gene,color=Gilteritinib.fdr))+
   geom_point() +
-  xlab("-Auxin") +
-  ylab("+Auxin") +
-  ggtitle("Control vs Treatment Beta Score with Rep2_vs_Rep1 FDR") +
+  xlab("DMSO") +
+  ylab("Gilteritinib") +
+  ggtitle("Control vs Treatment Beta Score with Gilteritinib FDR") +
   scale_colour_gradient(low = "#ff7f00", high = "#7570b3") #+
 #  scale_x_continuous(limits = c(-3, 2.5)) +
 #  scale_y_continuous(limits = c(-3, 2.5))
@@ -125,13 +125,13 @@ ggplot(data=Replicates,aes(x=NoAuxin.beta,y=Auxin.beta,label=Gene,color=Auxin.fd
 # Plot Treatment vs Control Beta Scores with Difference Auxin - NoAuxin (Diff)
 ```{r}
 # ggplot with nice labels and color scheme
-ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=abs(diff))) +
+ggplot(data=gdata1,aes(x=DMSO,y=Gilteritinib,label=Gene,color=abs(diff))) +
   geom_point() +
   xlab("-Auxin") +
   ylab("+Auxin") +
   ggtitle("Control vs Treatment Beta Score with (Auxin - NoAuxin) Diff") +
   scale_colour_gradient2(low = "#6a3d9a", mid = "#cab2d6", high = "#ff7f00") +
-  geom_text_repel(data=filter(gdata1, AuxinFDR<=0.1), aes(label=Gene))
+  geom_text_repel(data=filter(gdata1, GilteritinibFDR<=0.01), aes(label=Gene))
 ```
 
 # Export Plotly Graph
@@ -147,8 +147,7 @@ ggplot(data=gdata1,aes(x=NoAuxin,y=Auxin,label=Gene,color=abs(diff))) +
 
 ## Find all FDR < 0.1 With an Absolute Difference > 0.5
 ```{r}
-gdata1 %>% filter(AuxinFDR <= 0.01 & diff > 0.5)
-gdata1 %>% filter(NoAuxinFDR <= 0.01 & diff > 0.5)
+gdata1 %>% filter(GilteritinibFDR <= 0.01 & diff > 0.5)
 ```
 
 ## Top10 Negative Difference (Enhancers)
