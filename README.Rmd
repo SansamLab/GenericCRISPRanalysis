@@ -197,28 +197,8 @@ SRR10852450.fastq SRR10852436.fastq SRR10852439.fastq SRR10852442.fastq' \
 2. MAGeCK MLE  
 - [sample1.gene_summary.txt](Vignettes/vignette3Data/sample1.gene_summary.txt)  
 - [sample1.sgrna_summary.txt](Vignettes/vignette3Data/sample1.sgrna_summary.txt)  
-3. [multiQC Report](Vignettes/vignette1Data/fastqc_results/multiqc_results/multiqc_report.html)  
-
-
-### Example 2:  Get fastq files from object store and SRA and make count table
-
-```{bash,eval=F}
-sbatch \
---output slurm-%x.%A.%a.log \
---mail-type END,FAIL,ARRAY_TASKS \
---mem 96 \
---cpus-per-task 12 \
--p serial \
---wrap=\
-"/Volumes/Sansam/hpc-nobackup/scripts/CRISPRScreenAnalysisWrapper_ver01.sh \
--o 'o3://LDAP_o3-sansamc/2020/2020Mar19_TDN_CRISPRLibraryPreps/brunello_TNscreen_S32_R1_001.fastq.gz' \
--s 'SRR8983579 SRR6737232 SRR8297998' \
--b 'Sansam_Brunello_lentiguide,SRR8983579_Brunello_lentiguide,\
-SRR6737232_Brunello_lentiguide,SRR8297998_Brunello_lentiguide' \
--q 'brunello_TNscreen_S32_R1_001.fastq SRR8983579.fastq \
-SRR6737232.fastq SRR8297998.fastq' \
--l broadgpp-brunello-library-corrected.txt"
-```
+3. QC Report 
+- [multiQC Report](Vignettes/vignette1Data/fastqc_results/multiqc_results/multiqc_report.html)  
 
 
 # Possible Outcomes from Hits
